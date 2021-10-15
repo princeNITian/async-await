@@ -5,16 +5,30 @@ const url = 'http://data.fixer.io/api/latest?access_key=7b07a36a336411b2c3c0ee56
 
 
 const getExchangeRate = async (from, to) => {
+
+    try{
         const response = await axios.get(url);
         const euro = 1 / response.data.rates[from];
         const rate = euro * response.data.rates[to];
+        if(isNaN(rate)){
+            throw new Error();
+        }
         return rate;
+    }catch(e){
+        throw new Error(`Unable to get exchange rate for ${from} and ${to}.`)
+    }
+        
     
 }
 
 const getCountries = async (currencyCode) => {
-    const response = await axios.get(`https://restcountries.com/v3.1/currency/${currencyCode}`);
-    return response.data.map((country) => country.name);
+    
+    try{
+        const response = await axios.get(`https://restcountries.com/v3.1/currency/${currencyCode}`);
+        return response.data.map((country) => country.name);
+    }catch(e){
+        throw new Error(`Unable to get countries that use ${currencyCode}.`);
+    }
 }
 
 // getExchangeRate('EUR','INR').then((rate) => {
@@ -45,4 +59,4 @@ const convertCurrency = async (from, to, amount) => {
 }
 
 
-convertCurrency('USD','EUR',100).then((message) => console.log(message));
+convertCurrency('USD','EUR',100).then((message) => console.log(message)).catch(e => console.log(e.message));
