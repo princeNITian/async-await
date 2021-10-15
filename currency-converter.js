@@ -14,12 +14,35 @@ const getExchangeRate = async (from, to) => {
 
 const getCountries = async (currencyCode) => {
     const response = await axios.get(`https://restcountries.com/v3.1/currency/${currencyCode}`);
-    const countries = response.data.map(country => country.name );
-    return countries;
+    return response.data.map((country) => country.name);
 }
 
-getExchangeRate('EUR','INR').then((rate) => {
-    console.log(rate)
-})
+// getExchangeRate('EUR','INR').then((rate) => {
+//     console.log(rate)
+// })
 
-getCountries('INR').then((names) => console.log(names));
+// getCountries('INR').then((names) => console.log(names));
+
+// const convertCurrency = (from, to, amount) => {
+//     let convertedAmt;
+//     getExchangeRate(from,to).then((rate) => {
+//         convertedAmt = (amount*rate).toFixed(2);
+//         // console.log(convertedAmt);
+//         return getCountries(to);
+//     }).then((countries) => {
+//         // console.log(countries);
+//         console.log(`${amount} ${from} is worth ${convertedAmt} ${to}. You can spend it in the following countries: ${(countries.map(c => c.common)).join(', ')}.`);
+//     })
+// }
+
+
+const convertCurrency = async (from, to, amount) => {
+    
+    const rate =  await getExchangeRate(from,to)
+    const countries = await getCountries(to);
+    const convertedAmt = (amount*rate).toFixed(2);
+    return `${amount} ${from} is worth ${convertedAmt} ${to}. \nYou can spend it in the following countries: ${(countries.map(c => c.common)).join(', ')}.`;
+}
+
+
+convertCurrency('USD','EUR',100).then((message) => console.log(message));
